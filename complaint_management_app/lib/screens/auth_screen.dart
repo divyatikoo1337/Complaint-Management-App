@@ -1,4 +1,5 @@
 import 'package:complaint_management_app/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -11,18 +12,98 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final TextEditingController _emailControllerL = TextEditingController();
+  final TextEditingController _passwordControllerL = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailControllerR = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _passwordControllerR = TextEditingController();
+  // final TextEditingController _cPasswordControllerR = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
+
+  User? get currentUser => _firebaseAuth.currentUser;
+
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  // Future<void> signInWithEmailAndPassword({
+  //   required String email,
+  //   required String password,
+  // }) async {
+  //   await _firebaseAuth.signInWithEmailAndPassword(
+  //     email: email,
+  //     password: password,
+  //   );
+  // }
+
+  // Future<void> createUserWithEmailAndPassword({
+  //   required String email,
+  //   required String password,
+  // }) async {
+  //   await _firebaseAuth.createUserWithEmailAndPassword(
+  //     email: email,
+  //     password: password,
+  //   );
+  // }
+
+  Future<void> _signInWithEmailAndPassword() async {
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: _emailControllerL.text,
+        password: _passwordControllerL.text,
+      );
+      print('Successfully signed in: ${userCredential.user!.uid}');
+      // Navigate to the next screen or perform desired actions
+      Navigator.push(
+          context, MaterialPageRoute(builder: (ctx) => ComplaintsScreen()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided.');
+      }
+    }
+  }
+
+  Future<void> _registerWithEmailAndPassword() async {
+    try {
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: _emailControllerR.text,
+        password: _passwordControllerR.text,
+      );
+      print('Successfully registered: ${userCredential.user!.uid}');
+      // Navigate to the next screen or perform desired actions after registration
+      Navigator.push(
+          context, MaterialPageRoute(builder: (ctx) => ComplaintsScreen()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        print('Email is already in use.');
+      } else if (e.code == 'invalid-email') {
+        print('Invalid email address.');
+      }
+    }
+  }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
   bool _showLogin = true;
 
-  String userInputNameR = '';
-  String userInputEmailR = '';
-  String userInputNumberR = '';
-  String userInputUrlR = '';
-  String userInputPasswordR = '';
-  String userInputCPasswordR = '';
+  // String userInputNameR = '';
+  // String userInputEmailR = '';
+  // String userInputNumberR = '';
+  // String userInputUrlR = '';
+  // String userInputPasswordR = '';
+  // String userInputCPasswordR = '';
 
-  String userInputNameL = '';
-  String userInputPasswordL = '';
+  // String userInputNameL = '';
+  // String userInputPasswordL = '';
 
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,11 +139,12 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              userInputNameL = value;
-                            });
-                          },
+                          // onChanged: (value) {
+                          //   setState(() {
+                          //     userInputNameL = value;
+                          //   });
+                          // },
+                          controller: _emailControllerL,
                           decoration: InputDecoration(
                               hintText: 'johndoe@gmail.com',
                               hintStyle: TextStyle(
@@ -80,11 +162,12 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              userInputPasswordL = value;
-                            });
-                          },
+                          // onChanged: (value) {
+                          //   setState(() {
+                          //     userInputPasswordL = value;
+                          //   });
+                          // },
+                          controller: _passwordControllerL,
                           // decoration: InputDecoration(
                           //     hintText: 'fghj2345vb',
                           //     hintStyle: TextStyle(
@@ -116,12 +199,13 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => ComplaintsScreen()));
-                          },
+                          // onPressed: () {
+                          //   Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (ctx) => ComplaintsScreen()));
+                          // },
+                          onPressed: () => _signInWithEmailAndPassword(),
                           icon: Icon(
                             Icons.login,
                             color: Theme.of(context).backgroundColor,
@@ -171,11 +255,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputNameR = value;
-                                });
-                              },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     userInputNameR = value;
+                              //   });
+                              // },
+                              controller: _nameController,
                               decoration: InputDecoration(
                                   hintText: 'Chandler Bing',
                                   hintStyle: TextStyle(
@@ -194,11 +279,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputEmailR = value;
-                                });
-                              },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     userInputEmailR = value;
+                              //   });
+                              // },
+                              controller: _emailControllerR,
                               decoration: InputDecoration(
                                   hintText: 'chandlerbing@gmail.com',
                                   hintStyle: TextStyle(
@@ -218,11 +304,12 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             TextField(
                               keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputNumberR = value;
-                                });
-                              },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     userInputNumberR = value;
+                              //   });
+                              // },
+                              controller: _numberController,
                               decoration: InputDecoration(
                                   hintText: '9878664455',
                                   hintStyle: TextStyle(
@@ -242,11 +329,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputUrlR = value;
-                                });
-                              },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     userInputUrlR = value;
+                              //   });
+                              // },
+                              controller: _urlController,
                               decoration: InputDecoration(
                                   hintText: 'image.png',
                                   hintStyle: TextStyle(
@@ -266,29 +354,15 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputPasswordR = value;
-                                });
-                              },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     userInputPasswordR = value;
+                              //   });
+                              // },
+                              controller: _passwordControllerR,
                             ),
                             const SizedBox(
                               height: 7,
-                            ),
-
-                            //confirm password
-                            Text(
-                              "Confirm Password:",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Theme.of(context).backgroundColor),
-                            ),
-                            TextField(
-                              onChanged: (value) {
-                                setState(() {
-                                  userInputCPasswordR = value;
-                                });
-                              },
                             ),
                           ],
                         ),
@@ -314,12 +388,13 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: TextButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) => ComplaintsScreen()));
-                            },
+                            // onPressed: () {
+                            //   Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //           builder: (ctx) => ComplaintsScreen()));
+                            // },
+                            onPressed: () => _registerWithEmailAndPassword(),
                             icon: Icon(
                               Icons.app_registration,
                               color: Theme.of(context).backgroundColor,
