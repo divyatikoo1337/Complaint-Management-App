@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:complaint_management_app/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,32 +20,12 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _emailControllerR = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _passwordControllerR = TextEditingController();
-  // final TextEditingController _cPasswordControllerR = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
 
   User? get currentUser => _firebaseAuth.currentUser;
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // Future<void> signInWithEmailAndPassword({
-  //   required String email,
-  //   required String password,
-  // }) async {
-  //   await _firebaseAuth.signInWithEmailAndPassword(
-  //     email: email,
-  //     password: password,
-  //   );
-  // }
-
-  // Future<void> createUserWithEmailAndPassword({
-  //   required String email,
-  //   required String password,
-  // }) async {
-  //   await _firebaseAuth.createUserWithEmailAndPassword(
-  //     email: email,
-  //     password: password,
-  //   );
-  // }
 
   Future<void> _signInWithEmailAndPassword() async {
     try {
@@ -74,9 +55,6 @@ class _AuthScreenState extends State<AuthScreen> {
         password: _passwordControllerR.text,
       );
       print('Successfully registered: ${userCredential.user!.uid}');
-      // Navigate to the next screen or perform desired actions after registration
-      Navigator.push(
-          context, MaterialPageRoute(builder: (ctx) => ComplaintsScreen()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         print('Email is already in use.');
@@ -92,18 +70,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _showLogin = true;
 
-  // String userInputNameR = '';
-  // String userInputEmailR = '';
-  // String userInputNumberR = '';
-  // String userInputUrlR = '';
-  // String userInputPasswordR = '';
-  // String userInputCPasswordR = '';
-
-  // String userInputNameL = '';
-  // String userInputPasswordL = '';
-
-
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,11 +105,6 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         TextField(
-                          // onChanged: (value) {
-                          //   setState(() {
-                          //     userInputNameL = value;
-                          //   });
-                          // },
                           controller: _emailControllerL,
                           decoration: InputDecoration(
                               hintText: 'johndoe@gmail.com',
@@ -162,19 +123,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         TextField(
-                          // onChanged: (value) {
-                          //   setState(() {
-                          //     userInputPasswordL = value;
-                          //   });
-                          // },
                           controller: _passwordControllerL,
-                          // decoration: InputDecoration(
-                          //     hintText: 'fghj2345vb',
-                          //     hintStyle: TextStyle(
-                          //       color: Theme.of(context).backgroundColor,
-                          //     ),
-                          //     contentPadding: EdgeInsets.all(8),
-                          //     ),
                         ),
                       ],
                     ),
@@ -199,12 +148,6 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextButton.icon(
-                          // onPressed: () {
-                          //   Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (ctx) => ComplaintsScreen()));
-                          // },
                           onPressed: () => _signInWithEmailAndPassword(),
                           icon: Icon(
                             Icons.login,
@@ -255,11 +198,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              // onChanged: (value) {
-                              //   setState(() {
-                              //     userInputNameR = value;
-                              //   });
-                              // },
                               controller: _nameController,
                               decoration: InputDecoration(
                                   hintText: 'Chandler Bing',
@@ -279,11 +217,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              // onChanged: (value) {
-                              //   setState(() {
-                              //     userInputEmailR = value;
-                              //   });
-                              // },
                               controller: _emailControllerR,
                               decoration: InputDecoration(
                                   hintText: 'chandlerbing@gmail.com',
@@ -304,11 +237,6 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             TextField(
                               keyboardType: TextInputType.number,
-                              // onChanged: (value) {
-                              //   setState(() {
-                              //     userInputNumberR = value;
-                              //   });
-                              // },
                               controller: _numberController,
                               decoration: InputDecoration(
                                   hintText: '9878664455',
@@ -329,11 +257,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              // onChanged: (value) {
-                              //   setState(() {
-                              //     userInputUrlR = value;
-                              //   });
-                              // },
                               controller: _urlController,
                               decoration: InputDecoration(
                                   hintText: 'image.png',
@@ -354,11 +277,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Theme.of(context).backgroundColor),
                             ),
                             TextField(
-                              // onChanged: (value) {
-                              //   setState(() {
-                              //     userInputPasswordR = value;
-                              //   });
-                              // },
                               controller: _passwordControllerR,
                             ),
                             const SizedBox(
@@ -388,13 +306,26 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: TextButton.icon(
-                            // onPressed: () {
-                            //   Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //           builder: (ctx) => ComplaintsScreen()));
-                            // },
-                            onPressed: () => _registerWithEmailAndPassword(),
+                            onPressed: () {
+                              _registerWithEmailAndPassword();
+                              CollectionReference collRef = FirebaseFirestore
+                                  .instance
+                                  .collection('register');
+                              collRef.add({
+                                'email': _emailControllerR.text,
+                                'name': _nameController.text,
+                                'number': _numberController.text,
+                                'password': _passwordControllerR.text,
+                                'url': _urlController.text,
+                              }).then((DocumentReference documentRef) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (ctx) => ComplaintsScreen()));
+                              }).catchError((error) {
+                                print('Error adding document: $error');
+                              });
+                            },
                             icon: Icon(
                               Icons.app_registration,
                               color: Theme.of(context).backgroundColor,
