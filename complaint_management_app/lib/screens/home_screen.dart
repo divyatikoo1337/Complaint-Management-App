@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:complaint_management_app/screens/add_complaints_screen.dart';
+import 'package:complaint_management_app/screens/complaint_detail_screen.dart';
 import 'package:complaint_management_app/screens/pending_complaints_screen.dart';
 import 'package:complaint_management_app/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import '../models/Complaint.dart';
 import '../widgets/complaint_item.dart';
+import 'package:http/http.dart' as http;
 
 class ComplaintsScreen extends StatefulWidget {
   const ComplaintsScreen({super.key});
@@ -27,6 +31,39 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
     'November',
     'December',
   ];
+  // List<Complaint> complaints = [];
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   getComplaints();
+  // }
+
+  // void getComplaints() async {
+  //   final url = Uri.https(
+  //       'complaint-management-app-a9416-default-rtdb.asia-southeast1.firebasedatabase.app',
+  //       'complaint-list.json');
+
+  //   final response = await http.get(url);
+  //   // print(response.body);
+  //   final listdata = json.decode(response.body);
+  //   final List<Complaint> _loadedItems = [];
+
+  //   for (final item in listdata.entries) {
+  //     _loadedItems.add(Complaint(
+  //       text: item.value["heading"],
+  //       description: item.value["desc"],
+  //       date: item.value["date"],
+  //       category: Category.miscleneous,
+  //       hostel: item.value["hostel"],
+  //       tag: item.value["tag"] == "Pending" ? Tag.Pending : Tag.Done,
+  //     ));
+  //   }
+
+  //   complaints = _loadedItems;
+  //   print(complaints);
+  // }
 
   final List<Complaint> complaints = [
     Complaint(
@@ -232,6 +269,23 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
           const SizedBox(
             height: 10,
           ),
+          Container(
+            height: 250,
+            width: double.infinity,
+            child: ListView.builder(
+                itemCount: complaints.length,
+                itemBuilder: ((context, index) => InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => ComplaintDetailScreen(
+                                    complaint: complaints[index],
+                                  )));
+                    },
+                    child: ComplaintItem(complaint: complaints[index])))),
+          )
+          // complaints.map((e) => ComplaintItem(complaint: e));
         ],
       ),
     );

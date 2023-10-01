@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:complaint_management_app/screens/home_screen.dart';
 import 'package:complaint_management_app/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,11 +16,11 @@ class AddComplaintsScreen extends StatefulWidget {
 
 class _AddComplaintsScreenState extends State<AddComplaintsScreen> {
 
-  void _onSave() {
+  void _onSave() async {
     final url = Uri.https(
         'complaint-management-app-a9416-default-rtdb.asia-southeast1.firebasedatabase.app',
         'complaint-list.json');
-    http.post(url,
+    final response = await http.post(url,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -29,7 +30,11 @@ class _AddComplaintsScreenState extends State<AddComplaintsScreen> {
           'category': _selectedCategory.name,
           'date': _selectedDate.toString(),
           'hostel': _selectedHostel.name,
+          'tag': "Pending",
         }));
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (ctx) => ComplaintsScreen()));
   }
 
   final _titleControler = TextEditingController();
