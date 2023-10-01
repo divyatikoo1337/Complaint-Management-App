@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:complaint_management_app/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
 import '../models/Complaint.dart';
 
 class AddComplaintsScreen extends StatefulWidget {
@@ -12,6 +14,24 @@ class AddComplaintsScreen extends StatefulWidget {
 }
 
 class _AddComplaintsScreenState extends State<AddComplaintsScreen> {
+
+  void _onSave() {
+    final url = Uri.https(
+        'complaint-management-app-a9416-default-rtdb.asia-southeast1.firebasedatabase.app',
+        'complaint-list.json');
+    http.post(url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'heading': _titleControler.text,
+          'desc': _descriptionController.text,
+          'category': _selectedCategory.name,
+          'date': _selectedDate.toString(),
+          'hostel': _selectedHostel.name,
+        }));
+  }
+
   final _titleControler = TextEditingController();
 
   final _descriptionController = TextEditingController();
@@ -149,7 +169,7 @@ class _AddComplaintsScreenState extends State<AddComplaintsScreen> {
                     ),
                     width: 120,
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () => _onSave(),
                       icon: const Icon(
                         Icons.save,
                         color: Color.fromRGBO(219, 214, 238, 1),
